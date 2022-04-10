@@ -1,0 +1,109 @@
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
+int isOperator(char c)
+{
+	if (c == '+' || c == '-' || c == '*' || c == '/')
+		return 1;
+	else return 0;
+}
+void moveOperator(char* p)
+{
+	while (*p != '\0')
+	{
+		*p = *(p + 1);
+		p++;
+	}
+}
+void moveOperand(float* p, float* end)
+{
+	while (p != end)
+	{
+		*p = *(p + 1);
+		p++;
+	}
+}
+int main()
+{
+	char s[] = "1-2.5*4+10.2/5.1";
+	char op[100] = { '\0' };
+	float os[100];
+	int ox = 0;
+	for (int i = 0; i < strlen(s); i++)
+	{
+		if (isOperator(s[i]))
+			op[ox++] = s[i];
+	}
+	ox = 0;
+	for (int i = 0; i < strlen(s); i++)
+	{
+		char tp[100] = { '\0' };
+		int tx = 0;
+		while (!isOperator(s[i]))
+		{
+			tp[tx++] = s[i];
+			i++;
+		}
+		float floatv = atof(tp);
+		os[ox++] = floatv;
+	}
+	for (int i = 0; i < ox; i++)
+		printf("%0.lf\n", os[i]);
+	char* pr = op;
+	float* pd = os;
+	while (*pr != '\0')
+	{
+		if (*pr == '*')
+		{
+			float lef = *pd;
+			float rig = *(pd + 1);
+			float res = lef * rig;
+			*pd = res;
+			moveOperator(pr);
+			moveOperand(pd + 1, &os[ox]);
+			ox--;
+		}
+		else if (*pr == '/')
+		{
+			float lef = *pd;
+			float rig = *(pd + 1);
+			float res = lef / rig;
+			*pd = res;
+			moveOperator(pr);
+			moveOperand(pd + 1, &os[ox]);
+			ox--;
+		}
+		else
+		{
+			pr++;
+			pd++;
+		}
+	}
+	pr = op;
+	pd = os;
+	while (*pr != '\0')
+	{
+		if (*pr == '+')
+		{
+			float lef = *pd;
+			float rig = *(pd + 1);
+			float res = lef + rig;
+			*pd = res;
+			moveOperator(pr);
+			moveOperand(pd + 1, &os[ox]);
+			ox--;
+		}
+		else if (*pr == '-')
+		{
+			float lef = *pd;
+			float rig = *(pd + 1);
+			float res = lef - rig;
+			*pd = res;
+			moveOperator(pr);
+			moveOperand(pd + 1, &os[ox]);
+			ox--;
+		}
+	}
+	printf("%0.2f\n", os[0]);
+	return 0;
+}
